@@ -1,0 +1,118 @@
+# CI/CD and environments {#sec-cicd}
+
+CI runs on every PR, and the deploy to production goes out automatically from `main`, always passing through staging first. The goal is for releasing to be boring: a repeatable process with no steps kept in someone's memory.
+
+- **CI (continuous integration):** every change is checked automatically before it goes in.
+- **CD (continuous delivery):** whatever lands in `main` reaches production through an automated process.
+
+## The pipeline
+
+```{mermaid}
+flowchart TB
+    subgraph ci["CI: on every pull request"]
+        direction LR
+        L["Lint and types"] --> T["Tests"] --> MG["Migration check"] --> B["Build"]
+    end
+    subgraph cd["CD: after the merge"]
+        direction LR
+        S["Deploy to staging"] --> SM["Smoke tests"] --> P["Deploy to production"]
+    end
+    ci -- "all green: merge" --> cd
+    style ci fill:transparent,stroke:#adb5bd
+    style cd fill:transparent,stroke:#adb5bd
+```
+
+## What CI checks
+
+An example for Farol (Django on the backend, React with Vite and TypeScript on the frontend):
+
+| Step | Backend (`api/`) | Frontend (`web/`) |
+| --- | --- | --- |
+| Formatting and lint | `ruff check` and `ruff format --check` | `eslint` and `prettier --check` |
+| Types | `mypy` (optional at first) | `tsc --noEmit` |
+| Tests | `python manage.py test` or `pytest` | `vitest run` |
+| Migrations | `python manage.py makemigrations --check --dry-run` | — |
+| Build | — | `vite build` |
+| Security | `pip-audit` | `npm audit --omit=dev` |
+
+**Start small:** lint, tests, and the migration check. Add the rest gradually. A CI that fails over trivia ends up ignored in practice.
+
+A minimal GitHub Actions workflow for the backend:
+
+```yaml
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt ruff
+      - run: ruff check .
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py test
+```
+
+## Environments
+
+| Environment | What it's for | Data |
+| --- | --- | --- |
+| Local | Development | Fictional (seed) |
+| Staging | Test the deploy and validate before production | Fictional, never customers' |
+| Production | Customers | Real, restricted access |
+
+**Real data never leaves production.** No copying the database to debug on a laptop. To reproduce a problem, create equivalent fictional data. In a financial product, this rule has no exceptions.
+
+## Deploy and rollback
+
+- The deploy is a **workflow**, not a command typed by hand.
+- Every version in production has an identifiable **tag or SHA**.
+- **Rollback is written in a runbook** and has been tested at least once.
+- The production deploy can require manual approval using GitHub **Environments**, with required reviewers.
+
+## Secrets in CI
+
+Secrets get into CI through **GitHub Actions Secrets** or are read from a password manager through an official integration. Never write a secret in the workflow YAML. Details in Chapter [-@sec-security].
+
+## Delivery metrics
+
+The DORA research identified four metrics that set high-performing teams apart:
+
+| Metric | Question |
+| --- | --- |
+| Deployment frequency | How often do we release? |
+| Lead time for changes | How long from commit to production? |
+| Change failure rate | How many deploys cause a problem? |
+| Time to restore | How long to get back to normal after a failure? |
+
+A small team doesn't need a dashboard: at the iteration review, note how many deploys there were and how many caused problems.
+
+::: {.callout-tip title="In this repository"}
+This [book's workflow](https://github.com/Garon-Sys/saas-handbook/blob/main/.github/workflows/book.yml) is a complete pipeline in miniature: on every PR, it renders the book and checks the links; on `main`, it publishes to GitHub Pages. See the runs in the [Actions](https://github.com/Garon-Sys/saas-handbook/actions) tab.
+:::
+
+::: {.callout-note title="Try it"}
+Create your project's minimal CI with a single step: the tests. Open a PR with a deliberately broken test and watch CI block the merge.
+:::

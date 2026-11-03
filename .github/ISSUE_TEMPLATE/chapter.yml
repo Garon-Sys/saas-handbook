@@ -1,0 +1,41 @@
+name: Chapter or section
+description: Write or rewrite a chapter or section of the book.
+title: "Chapter: "
+labels: ["chapter"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Part and chapter, or the file.
+      placeholder: "Part III — chapters/13-incidents.qmd"
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What the reader should be able to do after reading
+      description: One or two sentences. This is the main definition of done.
+      placeholder: "Classify an incident by severity and write a blameless postmortem."
+    validations:
+      required: true
+  - type: textarea
+    id: content
+    attributes:
+      label: Planned content
+      description: Topics, diagrams, and live examples from the repository.
+      placeholder: |
+        - Severity levels
+        - Incident flow (Mermaid)
+        - A Farol postmortem example
+    validations:
+      required: false
+  - type: checkboxes
+    id: done
+    attributes:
+      label: Definition of done
+      options:
+        - label: Text reviewed by someone else
+        - label: At least one diagram or concrete example
+        - label: A "Try it" box at the end
+        - label: New terms in the glossary

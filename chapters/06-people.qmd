@@ -1,0 +1,48 @@
+# People: onboarding and offboarding collaborators {#sec-people}
+
+A new collaborator should run the product locally and open their first PR in the first week, without depending on you for every step. That only happens if the path is written down and access is granted gradually.
+
+## What needs to exist in the repository
+
+- **A `README.md` at the root:** what the project is, how to run it locally in ten minutes or less (ideally a `make dev` or `docker compose up`), and where the rest of the documentation lives.
+- **`CONTRIBUTING.md`:** the branch and PR flow, commit conventions, how to run the tests. It can simply point to `HOW-WE-WORK.md`.
+- **Sample data (seed):** a command that fills the local database with fictional data. At Farol, invented spaces, members, and entries.
+- **`good first issue` issues:** small, well-described tasks for the first PR.
+
+## Gradual access
+
+The principle of **least privilege**: each person has only the access their role requires, and access grows with the need.
+
+| When | Access |
+| --- | --- |
+| Day 1 | Repository, GitHub Projects, shared drive folder |
+| First week | Staging environment, error tracking tool (e.g. Sentry) |
+| When the role requires it | Production (read before write), cloud provider, integrations |
+
+## Onboarding checklist
+
+- [ ] GitHub account with 2FA enabled.
+- [ ] Invitation to the repository and the project.
+- [ ] Access to the shared drive folder.
+- [ ] The project's vault in the password manager (never someone's personal vault).
+- [ ] Read `HOW-WE-WORK.md` and the main ADRs.
+- [ ] Local environment running with seed data.
+- [ ] First PR merged.
+
+## Offboarding checklist
+
+- [ ] Remove from GitHub, the drive, the cloud provider, the error tracking tool, and the integrations.
+- [ ] Remove from the project's vault in the password manager.
+- [ ] **Rotate the secrets the person knew.**
+- [ ] Reassign open issues.
+- [ ] Record the date access was revoked.
+
+Offboarding is the step people forget, and it's the one that leaves doors open. Write the offboarding checklist the same day you write the onboarding one.
+
+::: {.callout-tip title="In this repository"}
+[CONTRIBUTING.md](https://github.com/Garon-Sys/saas-handbook/blob/main/CONTRIBUTING.md) is this book's onboarding: after five minutes of reading, anyone knows how to propose a change.
+:::
+
+::: {.callout-note title="Try it"}
+Ask someone from outside to follow your README from scratch, with no help, and time it. Every question they ask is a line missing from the README.
+:::

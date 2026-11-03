@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Conversation, opinion, or disagreement
+    url: https://github.com/Garon-Sys/saas-handbook/discussions
+    about: To discuss ideas, the book's structure, or practices. Issues are for concrete work.

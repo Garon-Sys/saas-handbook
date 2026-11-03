@@ -1,0 +1,64 @@
+# Security, secrets, and access {#sec-security}
+
+In a SaaS that holds customer data, security is part of the product, not an extra. The habits in this chapter cost little for a small team, and they are exactly what an audit will ask for in the future.
+
+## Secrets
+
+Secrets are API keys, database passwords, tokens, and encryption keys.
+
+- **Never in the repository**, not even in a versioned `.env`. The repository holds only a `.env.example`, with the variable names and fake values.
+- **The source of truth is a password manager** (1Password, Bitwarden, or similar), in a **vault just for the project**, never in someone's personal vault.
+- **Environments receive copies:** the server gets a `.env` generated from the vault (for example, with the manager's CLI), and CI reads from GitHub Actions Secrets or directly from the vault through an official integration.
+- **Turn on GitHub's secret scanning and push protection.** They block a commit that exposes a key.
+- **Rotate** at least once a year and whenever someone leaves the project (Chapter [-@sec-people]).
+
+If a secret leaked in a commit, deleting the file isn't enough: it's still in the history. **Change the secret first**; cleaning the history is secondary.
+
+## Access: least privilege
+
+- Each person has only the access their role requires (Chapter [-@sec-people]).
+- Nobody accesses the production database as a routine. When it's needed, it's logged.
+- **2FA required** on GitHub, the cloud provider, the integrations, and the project's email.
+- **Review the access list every quarter.** Whoever no longer needs it, loses it.
+
+## Dependencies
+
+Turn on **Dependabot** to get vulnerability alerts and update PRs. Keep `pip-audit` and `npm audit` in CI (Chapter [-@sec-cicd]). Updating in small doses every week is much easier than a two-year jump.
+
+## Customer data
+
+- **Encryption in transit** (HTTPS always) and **at rest** (database and backups).
+- **Audit log:** who viewed or changed data, and when. At Farol, per user and per space.
+- **Masking** of sensitive data in logs and in the error tracking tool.
+- **A written retention and deletion policy:** what happens to the data when a user cancels or asks for deletion.
+- **Real data never leaves production** (Chapter [-@sec-cicd]).
+
+## Privacy and the law
+
+A SaaS with users in more than one country may be subject to several privacy laws at once, such as Brazil's LGPD, Europe's GDPR, and state and sector-specific laws in the United States. The minimum is a clear privacy policy and a channel for data access and deletion requests. For specific questions, consult a lawyer.
+
+## Financial integrations
+
+Bank aggregators and payment providers usually review the security of anyone using their API in production. Having this chapter's controls documented makes that approval easier. Store only the minimum needed from the tokens and data you receive.
+
+## The road to SOC 2
+
+Business customers often ask for a **SOC 2** report, an audit of security controls. It's not for a product's first year, but the controls it requires are the ones in this book:
+
+| SOC 2 control | Where it is in the book |
+| --- | --- |
+| Changes only through a reviewed process | PRs and branch protection (Chapter [-@sec-flow]) |
+| Access management and periodic reviews | [-@sec-people] and this chapter |
+| Incident response | [-@sec-incidents] |
+| Tested backups and recovery | [-@sec-backups] |
+| Monitoring | [-@sec-observability] |
+
+Teams that practice this early reach the audit with their history ready: the PRs, issues, and postmortems **are** the evidence.
+
+::: {.callout-tip title="In this repository"}
+This book's [`.gitignore`](https://github.com/Garon-Sys/saas-handbook/blob/main/.gitignore) blocks `.env` and its variants, letting only `.env.example` through. It's a pattern worth copying.
+:::
+
+::: {.callout-note title="Try it"}
+Run `git log --all -p | grep -iE "password|secret|api_key|token" | head` in your repository. Every suspicious result is a secret to change today.
+:::

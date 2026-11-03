@@ -1,0 +1,49 @@
+# Method before tools {#sec-method}
+
+With a SaaS, you don't ship software and walk away: you **keep it running, secure, and evolving** every day, for customers who rely on it. That takes method in seven areas, and most of the management problems in a small team are about agreements between people, not about tools.
+
+## The seven areas
+
+| Area | The question it answers | Chapter |
+| --- | --- | --- |
+| Work | What do we do now, who does it, what comes next? | [-@sec-projects], [-@sec-agile] |
+| Code | How does a change get into the product without breaking anything? | [-@sec-flow] |
+| Delivery | How does code reach production in a repeatable way? | [-@sec-cicd], [-@sec-migrations] |
+| Operations | Is it up? When it goes down, how does it come back? | [-@sec-observability], [-@sec-backups], [-@sec-incidents] |
+| Security | Is customer data protected? | [-@sec-security] |
+| Documentation | Can someone new understand things and decide on their own? | [-@sec-docs] |
+| People | How does a collaborator join, work, and leave? | [-@sec-people] |
+
+## The symptom: everything lives in one person's head
+
+With a single person, these areas run on improvisation. The backlog is a `TODO.md`, the deploy is a command you know by heart, the database password sits in a text file, and the decisions live in memory.
+
+That works until one of three things happens:
+
+1. **A collaborator joins** and has to ask about everything.
+2. **Something breaks at three in the morning** and the steps aren't written down.
+3. **You come back to a topic after six months** and can't remember why you decided it that way.
+
+This book's job is to **get knowledge out of your head and into the repository**, where it is versioned, reviewed, and findable.
+
+## Why not start with the tool
+
+Swapping `TODO.md` for Jira solves nothing if nobody has agreed on what a finished task is, who prioritizes, and when planning happens. The order that works is:
+
+1. **Agree** on how the work is done, in one or two pages.
+2. **Pick the simplest tool** that supports that agreement.
+3. **Write the agreement down** where everyone reads it.
+
+For a team that already lives on GitHub, the simplest tool is almost always GitHub itself: Issues and Projects for work, Pull Requests for code, Actions for delivery, and Markdown in the repository for documentation. That is this book's choice.
+
+## When the tool starts to matter
+
+Heavier tools such as Jira and Confluence start to make sense when the team grows beyond five to eight people, when non-technical people edit documentation every week, or when structured customer support comes in. Chapter [-@sec-agile] covers this tipping point.
+
+::: {.callout-tip title="In this repository"}
+This book's working agreement is in [CONTRIBUTING.md](https://github.com/Garon-Sys/saas-handbook/blob/main/CONTRIBUTING.md). It is short on purpose.
+:::
+
+::: {.callout-note title="Try it"}
+List three things in your project that only you know how to do today. They are the first candidates to become runbooks (Chapter [-@sec-docs]).
+:::

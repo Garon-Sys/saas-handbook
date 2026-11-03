@@ -1,0 +1,102 @@
+# Issues and GitHub Projects {#sec-projects}
+
+The backlog moves out of `TODO.md` and onto a board in GitHub Projects, where every task has an owner, a status, a history, and the PR that resolved it.
+
+A `TODO.md` works while you're alone. With two people, it doesn't show who is doing what, doesn't allow discussion per item, and causes merge conflicts when both edit it at once.
+
+## Item types
+
+- **Issue:** a real task, with a description, discussion, and links to PRs. It's the unit of work.
+- **Draft item:** an idea jotted straight onto the board, without becoming an issue. Use it to capture things fast; convert it to an issue when you start working on it.
+- **Pull request:** appears on the board and moves on its own as it's reviewed and merged.
+
+## The life cycle of an item
+
+```{mermaid}
+stateDiagram-v2
+    direction TB
+    [*] --> Backlog: item created
+    Backlog --> Next: picked in planning
+    Next --> InProgress: someone took it
+    InProgress --> InReview: PR opened
+    InReview --> InProgress: changes requested
+    InReview --> Done: PR merged
+    Done --> [*]
+    InProgress: In progress
+    InReview: In review
+```
+
+Three transitions can be automatic: item created, PR opened, and PR merged. The rest are people's decisions.
+
+## The three views
+
+Projects shows the same items in three ways:
+
+| View | What it's for | When to use it |
+| --- | --- | --- |
+| Board (Kanban) | See the flow and drag cards | Day to day |
+| Table | Sort, filter, bulk-edit fields | Triage and planning |
+| Roadmap | Items on a timeline | Conversations about dates |
+
+## Recommended setup
+
+**Fields:**
+
+- **Status:** Backlog, Next, In progress, In review, Done.
+- **Priority:** P0 to P3 (table below).
+- **Area:** at Farol, `api`, `web`, `admin`, `ops`, `docs`.
+- **Estimate:** 1, 2, 3, 5, 8 (Chapter [-@sec-agile]).
+- **Iteration:** two-week cycles (Chapter [-@sec-agile]).
+
+**Labels in the repository:** `bug`, `feature`, `ops`, `security`, `debt`, `docs`, `good first issue`.
+
+**Built-in automations** (the project's Workflows menu):
+
+- Item added to the project → Status = Backlog.
+- PR opened → Status = In review.
+- Issue or PR closed → Status = Done.
+
+## Priorities in plain language
+
+| Priority | Means | Farol example |
+| --- | --- | --- |
+| P0 | Production broken or data at risk: drop everything | Users can't log in |
+| P1 | Blocks the iteration's goal | The aggregator import is failing |
+| P2 | Important, goes into the next iterations | A new annual report |
+| P3 | Nice to have | A visual tweak to a chart |
+
+## What makes a good issue
+
+A good issue answers three questions:
+
+1. **What is the problem** or need?
+2. **What is the expected outcome?**
+3. **How do we know it's done?** (acceptance criteria)
+
+```markdown
+## Problem
+Users can't export the annual report as a PDF.
+
+## Expected outcome
+An "Export PDF" button on the annual report screen.
+
+## Acceptance criteria
+- [ ] The PDF has the same rows as the screen
+- [ ] Amounts in BRL and USD are formatted
+- [ ] It works for a user with more than one space
+```
+
+## Habits that make the board work
+
+- **Every code change starts from an issue**, and the PR says `Closes #123`. That way the issue closes on its own at merge.
+- **Nobody has more than two things "In progress"** at the same time. Work started and then parked is the most common waste.
+- **Loose ideas go in as drafts** in the Backlog, without ceremony.
+- **The Backlog gets pruned** at every planning session: anything nobody will do in the next three months is closed with a comment.
+
+::: {.callout-tip title="In this repository"}
+Each chapter of the book is an issue on the [project board](https://github.com/Garon-Sys/saas-handbook/projects). The fields, views, and automations are exactly the ones in this chapter. The script [`scripts/bootstrap-issues.sh`](https://github.com/Garon-Sys/saas-handbook/blob/main/scripts/bootstrap-issues.sh) creates the labels and the initial issues.
+:::
+
+::: {.callout-note title="Try it"}
+Take five lines from your `TODO.md` and rewrite each one as problem, expected outcome, and acceptance criteria. If one doesn't fit, maybe it's an idea (a draft), not a task.
+:::

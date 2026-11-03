@@ -1,0 +1,60 @@
+project:
+  type: book
+  output-dir: _book
+
+lang: en
+
+book:
+  title: "SaaS Handbook"
+  subtitle: "Managing and operating software as a service for small teams, with live examples on GitHub"
+  author: "Andre Rico"
+  repo-url: https://github.com/Garon-Sys/saas-handbook
+  repo-branch: main
+  repo-actions: [edit, issue, source]
+  site-url: https://garon-sys.github.io/saas-handbook/
+  search: true
+  page-navigation: true
+  chapters:
+    - index.qmd
+    - part: "Part I — Management"
+      chapters:
+        - chapters/01-method.qmd
+        - chapters/02-where-things-live.qmd
+        - chapters/03-github-projects.qmd
+        - chapters/04-agile.qmd
+        - chapters/05-documentation.qmd
+        - chapters/06-people.qmd
+    - part: "Part II — Delivery"
+      chapters:
+        - chapters/07-code-flow.qmd
+        - chapters/08-vscode.qmd
+        - chapters/09-ci-cd.qmd
+        - chapters/10-migrations-and-flags.qmd
+    - part: "Part III — Operations"
+      chapters:
+        - chapters/11-observability.qmd
+        - chapters/12-backups.qmd
+        - chapters/13-incidents.qmd
+        - chapters/14-security.qmd
+  appendices:
+    - appendices/a-templates.qmd
+    - appendices/b-rollout-plan.qmd
+    - appendices/c-reading-path.qmd
+    - appendices/d-glossary.qmd
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-copy: true
+    link-external-newwindow: true
+  # PDF and EPUB come later (see adr/0001-quarto.md).
+  # pdf:
+  #   documentclass: scrreprt
+  # epub: default
+
+editor: source

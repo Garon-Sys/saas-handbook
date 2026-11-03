@@ -1,0 +1,42 @@
+# Preface {.unnumbered}
+
+This book is about what happens around the code of a SaaS: how the work is organized, how a change reaches production, and how the system is kept running, secure, and evolving. It is written for small teams, from one to eight people, who want method without bureaucracy.
+
+Most good material on the subject was written with large companies in mind. This book takes a different approach: **the minimum that works, with examples you can open and copy**.
+
+## Who it is for
+
+- **People building a SaaS alone** who feel that all the management lives in their head.
+- **People about to bring in their first collaborator** who want that person to get started without asking about every step.
+- **People leading a small team** who want a shared vocabulary for talking about process.
+- **Software engineering students** who want to see how the practices connect day to day.
+
+## The book's case: Farol
+
+The examples use **Farol**, a fictional personal-finance SaaS. It brings together accounts from several institutions, produces reports, and helps users plan. The backend is Django, the frontend is React with Vite and TypeScript, and bank data arrives through an aggregator. None of it exists: Farol is invented so the examples can be concrete without exposing any real system ([ADR 0004](https://github.com/Garon-Sys/saas-handbook/blob/main/adr/0004-fictional-case.md)).
+
+## This repository is the example
+
+The book uses everything it teaches. Throughout the chapters, boxes like this one point to the live example:
+
+::: {.callout-tip title="In this repository"}
+The book has a [board in GitHub Projects](https://github.com/Garon-Sys/saas-handbook/projects), [PR and issue templates](https://github.com/Garon-Sys/saas-handbook/tree/main/.github), a [workflow that publishes the book](https://github.com/Garon-Sys/saas-handbook/actions), and [decisions recorded as ADRs](https://github.com/Garon-Sys/saas-handbook/tree/main/adr).
+:::
+
+And boxes like this one suggest a short exercise to apply to your own project:
+
+::: {.callout-note title="Try it"}
+Pick one of your projects and write down, in one sentence, which of these areas worries you most today: work, code, delivery, operations, security, documentation, or people. Start reading with the matching part.
+:::
+
+## How to read it
+
+**Part I — Management** is about organizing work and knowledge. **Part II — Delivery** covers the path of a change to production. **Part III — Operations** is about keeping the system running. The **appendices** hold ready-to-use templates, a phased rollout plan, a reading path, and a glossary.
+
+On your first read, go in order. After that, use each chapter as a reference.
+
+## How to contribute
+
+Disagreements and suggestions from people who live this every day are welcome. Use Discussions to talk, issues for specific fixes, and PRs to propose text. The [contributing guide](https://github.com/Garon-Sys/saas-handbook/blob/main/CONTRIBUTING.md) explains the flow, which is the same one described in Chapter 7.
+
+There is also a [Portuguese edition](https://github.com/Garon-Sys/manual-saas) of this book.

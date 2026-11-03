@@ -1,0 +1,143 @@
+# Templates {#sec-templates}
+
+Ready-to-copy templates. All of them are under the MIT license ([LICENSE-CODE](https://github.com/Garon-Sys/saas-handbook/blob/main/LICENSE-CODE)).
+
+## ADR
+
+File: `docs/adr/NNNN-short-title.md`
+
+```markdown
+# ADR NNNN — Short title of the decision
+
+- **Status:** Proposed | Accepted | Superseded by ADR 00XX
+- **Date:** YYYY-MM-DD
+
+## Context
+What problem we are solving and what constraints apply.
+
+## Decision
+What was decided, in one or two sentences.
+
+## Alternatives considered
+- **Option A:** why not.
+- **Option B:** why not.
+
+## Consequences
+What gets easier, what gets harder, what to revisit later.
+```
+
+## Runbook
+
+File: `docs/ops/situation-name.md`
+
+````markdown
+# Runbook — Situation name
+
+**When to use:** the symptom or situation that leads to this runbook.
+**Estimated time:** 15 minutes.
+**Who can run it:** whoever has access X.
+
+## Prerequisites
+- Access to ...
+- Tool ... installed
+
+## Steps
+1. Exact command:
+   ```bash
+   command --with --parameters
+   ```
+2. Where to click, what you should see.
+
+## How to verify
+What confirms it worked.
+
+## How to undo
+What to do if it goes wrong halfway.
+
+## History
+- YYYY-MM-DD — run by Jane; took 12 minutes; step 2 adjusted.
+````
+
+## Postmortem
+
+File: `docs/postmortems/YYYY-MM-DD-title.md`
+
+```markdown
+# Postmortem — Short title of the incident
+
+- **Date:** YYYY-MM-DD
+- **Severity:** SEV1 | SEV2
+- **Duration:** from HH:MM to HH:MM (N minutes)
+- **Author:** name
+
+## Summary
+Two or three sentences: what happened and the impact.
+
+## Impact
+Who was affected, for how long, whether data was lost or exposed.
+
+## Timeline
+- HH:MM — what happened or what was done.
+
+## Cause
+The process gap that allowed the incident (not "who made the mistake").
+
+## What worked
+## What didn't work
+
+## Actions
+- [ ] A concrete action that changes a process, tool, or document (#issue).
+```
+
+## Issue
+
+This repository's issue templates are in [`.github/ISSUE_TEMPLATE/`](https://github.com/Garon-Sys/saas-handbook/tree/main/.github/ISSUE_TEMPLATE), in form format (YAML). A generic Markdown version:
+
+```markdown
+## Problem
+What's wrong or what's missing.
+
+## Expected outcome
+How it should be.
+
+## Acceptance criteria
+- [ ] Verifiable criterion 1
+- [ ] Verifiable criterion 2
+```
+
+## Pull request
+
+This repository's template is in [`.github/pull_request_template.md`](https://github.com/Garon-Sys/saas-handbook/blob/main/.github/pull_request_template.md). The version for a software product is in Chapter [-@sec-flow].
+
+## `HOW-WE-WORK.md`
+
+```markdown
+# How we work
+
+## Where things live
+(the table from Chapter 2, adapted)
+
+## The flow of a task
+Issue → branch `NNN-title` → PR with `Closes #NNN` → green CI → review → merge → deploy.
+
+## Definition of done
+- Merged and in production
+- Tests covering the new behavior
+- Migration reviewed
+- Documentation updated, if needed
+
+## When to write an ADR
+A decision that is hard to undo, affects more than one module, or raises "why is it like this?".
+
+## Pace
+Two-week iterations. Planning on Monday; review and retrospective on the last day.
+
+## Security
+- Secrets only in the password manager, in the project's vault
+- Real data never outside production
+- 2FA required everywhere
+
+## Operating numbers
+- RPO: 24 hours
+- RTO: 4 hours
+```

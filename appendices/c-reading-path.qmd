@@ -1,0 +1,19 @@
+# Reading path {#sec-reading}
+
+Study in the order of the rollout plan (Appendix [-@sec-plan]): each topic has a short read to apply right away and a deeper one for later. The readings are free, except for the books shown in italics.
+
+| # | Topic | To apply now | To go deeper |
+| --- | --- | --- | --- |
+| 1 | GitHub Projects | [GitHub Docs: Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects) | [Shape Up](https://basecamp.com/shapeup), a cycle-based method for small teams |
+| 2 | Agile | [The Scrum Guide](https://scrumguides.org/) (about 15 pages) | *Kanban*, by David J. Anderson |
+| 3 | Code flow | [GitHub flow](https://docs.github.com/en/get-started/using-github/github-flow) and [Conventional Commits](https://www.conventionalcommits.org/) | — |
+| 4 | SaaS architecture | [The Twelve-Factor App](https://12factor.net/) | — |
+| 5 | Continuous delivery | [DORA](https://dora.dev/) (the four metrics) | *Accelerate*, by Forsgren, Humble, and Kim |
+| 6 | Operations and reliability | [Google SRE books](https://sre.google/books/), chapters on monitoring and postmortems | *Site Reliability Engineering*, in full |
+| 7 | Incidents | [Atlassian Incident Management Handbook](https://www.atlassian.com/incident-management/handbook) | — |
+| 8 | Recorded decisions | [adr.github.io](https://adr.github.io/) | — |
+| 9 | Web application security | [OWASP Top 10](https://owasp.org/www-project-top-ten/) | [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/) |
+
+## How to study without stalling the project
+
+One reading per iteration, tied to the phase of the plan you're in. When you finish, write one line in your `HOW-WE-WORK.md` about what you decided to adopt. Reading without applying fades within weeks; one applied line sticks.

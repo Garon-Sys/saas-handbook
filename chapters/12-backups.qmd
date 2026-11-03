@@ -1,0 +1,53 @@
+# Backups, RPO, and RTO {#sec-backups}
+
+A backup that has never been restored isn't a backup. The minimum routine is: an automatic daily backup, a copy in another location, and a full restore tested every quarter, with the time recorded.
+
+## Two questions before any tool
+
+- **RPO** (*Recovery Point Objective*): **how much data can you afford to lose?** With daily backups, the RPO is up to 24 hours.
+- **RTO** (*Recovery Time Objective*): **how long can the service be down?** For example, 4 hours.
+
+```{mermaid}
+flowchart LR
+    B["Last backup"] -- "RPO: data lost" --> D["Disaster"]
+    D -- "RTO: time down" --> R["Service restored"]
+```
+
+Both numbers are business decisions, not technical ones. A financial SaaS in beta may accept an RPO of 24 hours and an RTO of 8 hours. With paying customers, the numbers usually tighten, and the infrastructure follows.
+
+## The 3-2-1 rule
+
+- **3** copies of the data (the original and two backups);
+- on **2** different kinds of storage;
+- **1** of them away from the main location (another region or another provider).
+
+## What goes into the backup
+
+At Farol:
+
+- the database (a PostgreSQL dump);
+- files uploaded by users (statements, receipts), in object storage;
+- **the data encryption key**, if there is one, stored **separately** from the backups. An encrypted backup without the key is useless; a backup stored with its key protects nothing.
+
+Code and configuration don't need backups: they're in Git.
+
+## The tested restore (DR drill)
+
+Every quarter:
+
+1. Spin up a separate environment, with no access to production.
+2. Restore the most recent backup following **only the runbook**.
+3. Check: does the product open? Does the data match a known sample?
+4. **Record the total time.** That's your real RTO.
+5. Fix the runbook with everything that was missing.
+6. Tear the environment down.
+
+The first drill almost always reveals a step that existed only in someone's head. That's what it's for.
+
+## Handling real data
+
+The drill environment holds real customer data. Treat it like production: restricted access, no copies to laptops, destroyed at the end, and logged (who, when, why).
+
+::: {.callout-note title="Try it"}
+Write your product's RPO and RTO, one line each, in `HOW-WE-WORK.md`. Then answer honestly: does your current backup meet those numbers? Have you ever restored one?
+:::

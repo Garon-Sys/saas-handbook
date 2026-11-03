@@ -1,0 +1,9 @@
+# Keeps the workflow's actions up to date (example from the security chapter).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci

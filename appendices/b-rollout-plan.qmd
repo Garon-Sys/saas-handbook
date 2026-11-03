@@ -1,0 +1,45 @@
+# Rollout plan {#sec-plan}
+
+A five-phase path to take a project from "everything in my head" to "ready for a collaborator and paying customers". Each phase fits in one or two iterations and doesn't depend on paid tools.
+
+## Phase 0 — Right away
+
+- [ ] Move every secret into a password manager, in a project vault.
+- [ ] Check whether any secret has ever been committed; if so, change it.
+- [ ] Turn on 2FA, secret scanning, and push protection on GitHub.
+- [ ] Move changing binaries (presentations, videos) out of the repository and into the drive.
+
+## Phase 1 — Organize the work
+
+- [ ] Create the GitHub Project with Status, Priority, Area, Estimate, and Iteration (Chapter [-@sec-projects]).
+- [ ] Create the labels and the Backlog, Current iteration, and Roadmap views.
+- [ ] Move `TODO.md` into issues and drafts; archive the file.
+- [ ] Create the current epics as issues of type Epic.
+- [ ] Run the first iteration with planning and review (Chapter [-@sec-agile]).
+
+## Phase 2 — Code flow and CI
+
+- [ ] Write `HOW-WE-WORK.md` and the root `README.md` (Chapter [-@sec-docs]).
+- [ ] Create `.github/` with PR and issue templates and `dependabot.yml`.
+- [ ] Create the minimal CI: lint, tests, and migration check (Chapter [-@sec-cicd]).
+- [ ] Turn on branch protection for `main` (Chapter [-@sec-flow]).
+- [ ] Adopt Conventional Commits and start a `CHANGELOG.md`.
+
+## Phase 3 — Operations
+
+- [ ] Set up error tracking on the backend and the frontend (Chapter [-@sec-observability]).
+- [ ] Set up an external uptime monitor, with alerts.
+- [ ] Define RPO and RTO; do the first test restore (Chapter [-@sec-backups]).
+- [ ] Write the deploy, rollback, and secret-rotation runbooks.
+- [ ] Create `docs/postmortems/` and the template (Chapter [-@sec-incidents]).
+- [ ] Have a staging environment with fictional data.
+
+## Phase 4 — Ready for a collaborator and paying customers
+
+- [ ] A README with "run it in 10 minutes" and seed data (Chapter [-@sec-people]).
+- [ ] `CONTRIBUTING.md` and three `good first issue` issues.
+- [ ] Onboarding and offboarding checklists for collaborators.
+- [ ] Audit log and masking of sensitive data (Chapter [-@sec-security]).
+- [ ] Privacy and data retention policy.
+- [ ] Automated deploy from `main`, with feature flags (Chapter [-@sec-migrations]).
+- [ ] Status page.

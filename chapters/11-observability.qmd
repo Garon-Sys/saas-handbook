@@ -1,0 +1,66 @@
+# Observability and alerts {#sec-observability}
+
+Operating a service means knowing something broke before the customer does. For a small team, three things cover most of it: error tracking, an uptime monitor, and alerts that only fire when action is needed.
+
+## The four layers
+
+| Layer | Answers | Typical tool |
+| --- | --- | --- |
+| Errors | Which exception happened, for whom, in which version? | Sentry, on the backend and the frontend |
+| Availability | Are the site and the API responding? | External uptime monitor |
+| Logs | What did the system do, step by step? | Structured JSON logs |
+| Metrics | How much, how fast, how often? | From the provider; later something like Prometheus and Grafana |
+
+Start with the first two. They take an afternoon and catch most problems.
+
+## Error tracking
+
+A tool like Sentry groups identical exceptions and shows how many users were affected, the code version, and the path to the error. Set it up on the backend **and** the frontend: many SaaS errors happen in the browser and never reach the server.
+
+Two things to watch:
+
+- **Tag every event with the version** (the commit SHA). That way you can see whether an error started with a specific deploy.
+- **Mask sensitive data** before sending it: account numbers, IDs, amounts (Chapter [-@sec-security]).
+
+## Availability
+
+An external monitor hits the product every minute, from outside your infrastructure. Monitor:
+
+- the product's home page;
+- an API health endpoint (`/health`) that checks the database and critical dependencies;
+- the TLS certificate (it warns before expiry).
+
+The monitor has to be **external**. A health script running on the same server won't notice when the whole server goes down.
+
+## Structured logs
+
+Log in JSON, one line per event, with fixed fields: timestamp, level, message, `request_id`, `user_id` (or a pseudonymous identifier), and version. That lets you follow a request end to end and filter by user.
+
+```json
+{"ts": "2026-11-03T14:02:11Z", "level": "error", "msg": "import failed",
+ "request_id": "a91f", "space_id": 482, "institution": "bank-x", "version": "a3f9c2d"}
+```
+
+## Alerts
+
+**Only alert on what requires action.** An alert that fires every week for no reason teaches the team to ignore alerts, and on the day it matters, nobody looks.
+
+Farol's initial alerts:
+
+| Alert | Condition | Severity |
+| --- | --- | --- |
+| Product down | External monitor fails for 2 minutes | SEV1 |
+| High error rate | Errors per minute above 3× normal | SEV2 |
+| Import stalled | No import completed in 6 hours | SEV2 |
+| Backup didn't run | Last backup older than 26 hours | SEV2 |
+| Certificate expiring | Less than 14 days | SEV3 |
+
+Severities are defined in Chapter [-@sec-incidents].
+
+## Status page
+
+Once there are paying customers, a public page with the service's status heads off a flood of emails during incidents and shows transparency. Many external monitors include one.
+
+::: {.callout-note title="Try it"}
+Deliberately shut down the database in your staging environment. How long until someone, or some alert, notices? That time is your starting point.
+:::

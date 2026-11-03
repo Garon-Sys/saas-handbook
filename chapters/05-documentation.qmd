@@ -1,0 +1,98 @@
+# Documentation: ADRs, runbooks, and team rules {#sec-docs}
+
+Documentation lives in Markdown inside the repository and is reviewed through PRs, like code. This is called *docs-as-code*: the text changes in the same PR as the change it describes, so it doesn't quietly go stale in a forgotten wiki.
+
+## Document types
+
+| Type | The question it answers | How often it changes |
+| --- | --- | --- |
+| ADR | Why did we decide it this way? | Never: a new decision creates a new ADR |
+| Runbook | How do I do X in production? | Whenever the procedure changes |
+| Module note | How does this module work? | Along with the code |
+| Postmortem | What happened and what did we change? | Written once |
+| Team rules | How do we work here? | Rarely, by joint decision |
+
+## Folder structure
+
+At Farol, the documentation looks like this:
+
+```
+docs/
+  README.md              documentation index
+  HOW-WE-WORK.md         team rules
+  vision.md              what the product is and who it's for
+  adr/                   numbered decisions: 0001-..., 0002-...
+  ops/                   runbooks
+  postmortems/           one file per incident
+  visual/                brand source assets
+management/
+  notes/                 thinking in progress
+```
+
+## How documentation is born
+
+```{mermaid}
+flowchart TB
+    N["Note in progress<br/>management/notes/"] --> Q{"Is it a decision<br/>or work?"}
+    Q -- decision --> ADR["ADR<br/>docs/adr/"]
+    Q -- work --> I["Issue<br/>GitHub Projects"]
+    I --> PR["Pull request"]
+    PR --> RB["Runbook or module note<br/>updated in the same PR"]
+```
+
+## ADR: Architecture Decision Record
+
+An ADR is a short record of a decision: the context, what was decided, the alternatives, and the consequences. It answers the question every new collaborator asks: **"why is it like this?"**.
+
+**Write an ADR when the decision:**
+
+- is hard to undo (choice of database, provider, data model);
+- affects more than one module;
+- could prompt the question "why is it like this?" a year from now.
+
+Small decisions fit in a comment on the issue.
+
+**Rules:**
+
+- ADRs are **numbered in sequence** and **never edited** once accepted.
+- A decision that changes produces a new ADR, and the old one gets the status "Superseded by ADR 00XX".
+- An ADR fits on one screen. If it doesn't, there are two decisions in it.
+
+The template is in Appendix [-@sec-templates].
+
+## Runbook
+
+A runbook is a step-by-step guide for a known situation, **written for someone tired at three in the morning**. It doesn't explain theory; it lists commands, where to click, and how to tell it worked.
+
+A SaaS's first runbooks are usually:
+
+- Deploy and rollback.
+- Restoring the database from a backup.
+- Rotating secrets (API keys, database passwords).
+- Granting and revoking a collaborator's access.
+- What to do when the main integration fails (at Farol, the bank aggregator).
+
+A good runbook has: **when to use it**, **prerequisites**, **numbered steps with the exact command**, **how to verify**, and **how to undo**.
+
+## The team rules: `HOW-WE-WORK.md`
+
+This is the document a collaborator reads on day one. In one or two pages, it answers:
+
+- **Where things live** (Chapter [-@sec-where]).
+- **The flow of a task:** issue → branch → PR → review → merge → issue closed (Chapter [-@sec-flow]).
+- **The definition of done.**
+- **When to write an ADR.**
+- **The pace:** iteration length, planning day, and review day (Chapter [-@sec-agile]).
+- **The security rules:** secrets never in the repository, real data never outside production (Chapter [-@sec-security]).
+
+## Diagrams
+
+Use Mermaid inside the `.md` itself. GitHub renders it, and the diagram is reviewed in the PR as text, line by line. Images exported from drawing tools go stale without anyone noticing.
+
+::: {.callout-tip title="In this repository"}
+The book's decisions are in [`adr/`](https://github.com/Garon-Sys/saas-handbook/tree/main/adr), including the choice of Quarto (ADR 0001) and the use of a fictional case (ADR 0004). The diagrams in this chapter are Mermaid inside the `.qmd` itself.
+:::
+
+::: {.callout-note title="Try it"}
+Pick the oldest important decision in your project that was never written down. Write its ADR today, in 20 lines at most.
+:::

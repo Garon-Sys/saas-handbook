@@ -1,0 +1,35 @@
+# Glossary {#sec-glossary}
+
+| Term | Meaning |
+| --- | --- |
+| ADR | *Architecture Decision Record*: a short record of a decision, with context, alternatives, and consequences |
+| Backlog | A prioritized list of what hasn't started yet |
+| Branch protection | Rules that block changes to `main` without a PR and green CI |
+| CI/CD | Continuous integration (checking every change) and continuous delivery (releasing in an automated way) |
+| Conventional Commits | A commit message convention with a type prefix (`feat:`, `fix:`) |
+| Definition of done | Criteria a task must meet to be considered finished |
+| Deploy | Releasing a version of the code to an environment |
+| Docs-as-code | Documentation versioned in the repository and reviewed like code |
+| DORA | Research that defined four delivery performance metrics |
+| DR drill | Disaster recovery rehearsal: actually restoring the backup, in a separate environment |
+| Draft PR | A pull request in draft: CI runs, but it can't be merged and doesn't request review |
+| Epic | A large body of work, split into features and tasks |
+| Estimate (story points) | A relative measure of a task's size and uncertainty |
+| Expand → migrate → contract | A way to change the database without breaking the previous version of the code |
+| Feature flag | A switch that turns a feature on or off without a new deploy |
+| GitHub Flow | A flow with an always-deployable `main` and short branches through PRs |
+| Iteration (sprint) | A fixed work cycle; in this book, two weeks |
+| Least privilege | Each person has only the access their role requires |
+| Observability | The ability to understand the system through errors, logs, and metrics |
+| Postmortem | A blameless analysis of an incident, with improvement actions |
+| Pull request (PR) | A request to merge a branch into `main`, with a description, CI, and review |
+| Rollback | Going back to the previous version after a problematic deploy |
+| RPO | *Recovery Point Objective*: how much data it's acceptable to lose in a disaster |
+| RTO | *Recovery Time Objective*: how long the service can be down in a disaster |
+| Runbook | A step-by-step guide for a known operational situation |
+| SaaS | *Software as a Service*: software used over the internet, maintained by whoever offers it |
+| Secret scanning | A GitHub feature that detects keys and passwords in commits |
+| SEV | An incident's severity level (SEV1 is the most severe) |
+| SOC 2 | An audit of security controls, common for SaaS sold to businesses |
+| Squash and merge | A merge that combines all of a PR's commits into a single commit on `main` |
+| Staging | An environment like production, with fictional data, for validating before release |

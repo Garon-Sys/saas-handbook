@@ -1,0 +1,74 @@
+# Safe migrations and feature flags {#sec-migrations}
+
+During a deploy, the new and old versions of the code run side by side for a few minutes, and the database has to serve both. Renaming or dropping a column in a single step is the most common cause of a deploy outage. The technique that prevents it is called **expand → migrate → contract**.
+
+## Expand, migrate, contract
+
+A Farol example: renaming the column `amount` to `amount_cents`, changing it from decimal to integer.
+
+```{mermaid}
+sequenceDiagram
+    participant DB as Database
+    participant V1 as Code v1
+    participant V2 as Code v2
+    Note over DB,V2: Deploy 1: expand
+    DB->>DB: add amount_cents (nullable)
+    V2->>DB: write to both columns
+    V1->>DB: keep reading amount
+    Note over DB,V2: Migrate
+    DB->>DB: script copies amount to amount_cents
+    V2->>DB: switch to reading amount_cents
+    Note over DB,V2: Deploy 2: contract (days later)
+    DB->>DB: drop amount
+```
+
+1. **Expand:** add what's new (column, table, index) without removing anything. The old code keeps working.
+2. **Migrate:** the new code writes in the new format (and in the old one, if needed). A script copies the existing data.
+3. **Contract:** in a **later** deploy, once nothing reads the old format anymore, remove it.
+
+## Practical rules for Django migrations
+
+- **One migration per PR**, reviewed carefully.
+- **Adding a column:** always nullable or with a default. A required column without a default stalls the deploy.
+- **Dropping a column:** first the code stops using it, in one deploy; then the migration drops it, in the next deploy.
+- **Renaming:** never directly. Use expand, migrate, and contract.
+- **Large data migration:** in a separate command (`manage.py`), in batches, outside the schema migration.
+- **Index on a large table:** in PostgreSQL, create it `CONCURRENTLY` (in Django, `AddIndexConcurrently`) so the table isn't locked.
+- **Test the migration** on a staging database with a volume similar to production.
+
+## Feature flags
+
+A feature flag is a switch that turns a feature on or off **without a new deploy**. It separates two things that usually come together: **shipping the code** and **releasing the feature**.
+
+Common uses:
+
+- **Release to testers only** before releasing to everyone.
+- **Switch off quickly** something that went wrong, without a rollback.
+- **Merge unfinished work** into `main`, switched off, instead of keeping a long-lived branch.
+
+At first, you don't need an external service. At Farol, a simple table is enough:
+
+```python
+# flags/models.py
+from django.db import models
+
+class Flag(models.Model):
+    name = models.SlugField(unique=True)
+    enabled_for_all = models.BooleanField(default=False)
+    users = models.ManyToManyField("auth.User", blank=True)
+
+    def enabled_for(self, user) -> bool:
+        return self.enabled_for_all or self.users.filter(pk=user.pk).exists()
+```
+
+```python
+# in the code
+if Flag.objects.get(name="export-pdf").enabled_for(request.user):
+    ...
+```
+
+**The catch with flags:** each one is debt. Once the feature is released to everyone and stable, open an issue to remove the flag and the old code.
+
+::: {.callout-note title="Try it"}
+Look in your project's history for a migration that renamed or dropped a column in a single step. Rewrite it, on paper, as the three steps of expand, migrate, and contract.
+:::

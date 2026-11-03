@@ -1,0 +1,25 @@
+name: Fix or suggestion
+description: An error, broken link, confusing passage, or a specific suggestion.
+title: "Fix: "
+labels: ["fix"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Page link or file name, and the section.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or confusing
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+      description: How you would write it. If you prefer, open a PR directly.
+    validations:
+      required: false

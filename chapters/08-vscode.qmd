@@ -1,0 +1,164 @@
+# The flow in VS Code {#sec-vscode}
+
+Almost all of the flow in Chapter [-@sec-flow] can be done without leaving VS Code: pick up the issue, create the branch, write code, open the PR, follow CI, review, and merge. Only planning on the Projects board and the repository settings are better in the browser.
+
+## Who does what
+
+```{mermaid}
+flowchart TB
+    subgraph web["Browser: plan"]
+        direction LR
+        Q["Prioritize on the<br/>Projects board"] --> IT["Pull the issue<br/>into the iteration"]
+    end
+    subgraph vs["VS Code: execute"]
+        direction LR
+        ST["Start Working<br/>on Issue"] --> CO["Code<br/>and commit"] --> PU["Push and<br/>Draft PR"] --> RV["Ready for review<br/>and merge"]
+    end
+    subgraph gh["GitHub: automatic"]
+        direction LR
+        CI["CI runs<br/>on every push"] --> FE["Issue closes,<br/>card moves to Done"] --> DP["Deploy<br/>from main"]
+    end
+    web --> vs
+    vs --> gh
+    style web fill:transparent,stroke:#adb5bd
+    style vs fill:transparent,stroke:#adb5bd
+    style gh fill:transparent,stroke:#adb5bd
+```
+
+You plan in the browser and execute in the editor. Because the issue, the branch, and the PR are linked to one another, the cards on the board move on their own while you work.
+
+## Setup
+
+### The extensions
+
+Install three extensions, all from the **Extensions** tab (Ctrl/Cmd + Shift + X):
+
+| Extension | What for |
+| --- | --- |
+| **GitHub Pull Requests** (by GitHub) | Issues, PRs, review, and merge inside the editor |
+| **GitHub Actions** (by GitHub) | See CI runs and logs |
+| **Quarto** | Book preview (only for this repository) |
+
+Git itself (commits, branches, push) is built into VS Code, in the **Source Control** panel.
+
+After installing, the PR extension asks you to sign in to your GitHub account. Accept: it's what gives the editor access to issues and PRs.
+
+### Recommended settings
+
+Open the settings as JSON (command palette, Ctrl/Cmd + Shift + P, **Preferences: Open User Settings (JSON)**) and add:
+
+```json
+{
+  "githubIssues.issueBranchTitle": "${issueNumber}-${sanitizedLowercaseIssueTitle}",
+  "githubPullRequests.defaultMergeMethod": "squash",
+  "git.autofetch": true,
+  "git.pruneOnFetch": true
+}
+```
+
+- **`issueBranchTitle`:** a branch created from an issue follows the book's pattern, such as `12-export-annual-report-to-pdf`.
+- **`defaultMergeMethod`:** merges use squash by default (explained below).
+- **`autofetch` and `pruneOnFetch`:** the editor fetches updates from GitHub on its own and forgets remote branches that were already deleted.
+
+## The panels you'll use
+
+| Panel | Where it is | What it shows |
+| --- | --- | --- |
+| **Source Control** | Sidebar, branch icon | Changed files, diff, commit box, sync button |
+| **GitHub** | Sidebar, GitHub icon | *Issues* and *Pull Requests* sections |
+| **GitHub Actions** | Sidebar, rocket icon | Workflow runs and their logs |
+| **Status bar** | Bottom-left corner | The current branch; click to switch or create one |
+
+## A task from start to finish
+
+### 1. Pick up the issue
+
+In the **GitHub** panel, the **Issues** section shows the issues assigned to you. Hover over the issue and click **Start Working on Issue** (arrow icon).
+
+VS Code updates `main`, creates the branch `12-export-annual-report-to-pdf` from it, and switches to it. The status bar shows the new branch.
+
+### 2. Code and commit
+
+Work as usual. In the **Source Control** panel:
+
+- click a file to see the side-by-side **diff**;
+- use **+** to choose what goes into the commit (*stage*);
+- write the message following Conventional Commits (`feat(api): export report to PDF`);
+- confirm with **Ctrl/Cmd + Enter**.
+
+Prefer small commits, each with one idea. They're easier to review and, if needed, to undo.
+
+### 3. Push and Draft PR
+
+On the first push, Source Control shows a **Publish Branch** button. After that, it becomes **Sync Changes**.
+
+To open the PR, go to the **GitHub** panel, **Pull Requests** section, and click **Create Pull Request** (+ icon). Check:
+
+- **base:** `main`; **compare:** your branch;
+- **title:** following Conventional Commits, because it becomes the commit message on squash;
+- **description:** the repository template is already filled in; write `Closes #12`.
+
+On the create button, open the arrow next to it and choose **Create Draft**.
+
+### 4. Follow CI
+
+CI runs on every push. You can follow it in two ways:
+
+- on the PR page, inside VS Code, in the checks section;
+- in the **GitHub Actions** panel, which lists the runs and opens each step's log.
+
+If something fails, open the log, fix it, commit, and push. CI runs again on its own.
+
+### 5. Review and merge
+
+When you're done:
+
+1. On the PR page, click **Ready for review**.
+2. Review the diff in **Files changed**: clicking a file opens the comparison, and you can comment on a specific line. Even when you're alone, read the whole PR once; that's when forgotten details get caught.
+3. With green CI and the review done, click **Squash and Merge**.
+
+With `Closes #12` in the description, the issue closes on its own and the card moves to "Done" on the board.
+
+### 6. Clean up
+
+After the merge, the PR page offers **Delete Branch**. Accept: VS Code deletes the branch on GitHub and on your computer, switches back to `main`, and updates it.
+
+## Which merge type
+
+GitHub offers three ways to merge. For a small team, **squash** is the simplest choice:
+
+| Type | What happens on `main` | When to use it |
+| --- | --- | --- |
+| **Squash and merge** | All the PR's commits become one, with the PR title | Recommended default: one line per change in history |
+| Create a merge commit | All commits go in, plus a merge commit | When each commit in the PR needs to stay visible |
+| Rebase and merge | All commits go in, without a merge commit | Teams used to keeping every commit clean |
+
+With squash, intermediate commits ("tweak", "fix test") stay in the PR and don't clutter `main`. History becomes a readable list of changes, and each line points to the PR that explains why. You can enable squash only in **Settings → General → Pull Requests**.
+
+## The same flow from the terminal
+
+VS Code does under the hood what these commands do. They're worth knowing: they're faster once you're used to them, and they work in any editor.
+
+| Step | VS Code | Terminal (`git` and `gh`) |
+| --- | --- | --- |
+| Pick up the issue | Start Working on Issue | `gh issue develop 12 --checkout` |
+| Commit | Source Control, Ctrl/Cmd + Enter | `git add -p` and `git commit -m "feat: ..."` |
+| Push | Publish Branch / Sync Changes | `git push -u origin HEAD` |
+| Draft PR | Create Pull Request → Create Draft | `gh pr create --draft --fill` |
+| Follow CI | GitHub Actions panel | `gh pr checks --watch` |
+| Ready for review | Ready for review | `gh pr ready` |
+| Merge and clean up | Squash and Merge, Delete Branch | `gh pr merge --squash --delete-branch` |
+
+## When to go to the browser
+
+- **Planning:** the Projects board, with Board, Roadmap, iterations, and custom fields ([-@sec-projects], [-@sec-agile]).
+- **Repository settings:** branch protection, Pages, permissions, Actions secrets.
+- **Conversations:** the repository's Discussions.
+
+::: {.callout-tip title="In this repository"}
+The [`.vscode/extensions.json`](https://github.com/Garon-Sys/saas-handbook/blob/main/.vscode/extensions.json) file makes VS Code suggest this chapter's extensions to anyone who opens the repository for the first time. Copy the idea into your project.
+:::
+
+::: {.callout-note title="Try it"}
+Find a typo or a confusing passage in this book and fix it through the full flow without leaving VS Code: issue, Start Working on Issue, commit, Draft PR, CI, Ready for review, squash, Delete Branch.
+:::

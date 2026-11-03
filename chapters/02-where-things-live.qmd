@@ -1,0 +1,58 @@
+# Where things live {#sec-where}
+
+The GitHub repository is the source of truth. The only things that leave it are large binaries, binaries that change often, secrets, and material for people who have no access to the repository.
+
+## The map
+
+| What | Where | Why |
+| --- | --- | --- |
+| Code, migrations, tests | Repository | Versioned together with everything else |
+| Decisions (ADRs) | Repository, in `docs/adr/` | A settled decision is stable knowledge |
+| Runbooks and postmortems | Repository, in `docs/ops/` and `docs/postmortems/` | They change in the same PR as the code |
+| Team rules | Repository, in `docs/HOW-WE-WORK.md` | Everyone reads it on day one |
+| Notes in progress | Repository, in a working folder | Until they become an ADR or an issue |
+| Backlog, tasks, bugs | GitHub Issues + Projects | They link a task to the PR that resolves it |
+| Brand source assets (SVG, palette) | Repository, in `docs/visual/` | Small, stable, text-based |
+| Technical diagrams | Mermaid inside the `.md` | GitHub renders it; reviewed in the PR |
+| Presentations, videos, photos | Shared drive | Changing binaries bloat Git history |
+| Material for investors and customers | Drive (exported PDF) or blog | Recipients can't access the repository |
+| Secrets (keys, passwords, tokens) | Password manager | **Never** in the repository or the drive |
+
+## The binaries rule
+
+GitHub warns when a file is over 50 MB and rejects files over 100 MB. But the criterion that matters is **how often it changes**, not its size.
+
+Git keeps every version of every file forever. A 5 MB presentation saved 30 times becomes 150 MB of history, and that history never shrinks: everyone who clones the repository downloads all of it.
+
+- **Stable binary** (final logo, favicon, documentation image): stays in the repository.
+- **Changing binary** (presentation, video, design draft): goes to the drive, and the matching `.md` carries the link.
+
+## One home per document
+
+If a topic shows up in two places, one of them is the home and the other holds only a summary and a link. Duplicated documentation goes stale in one of the places, and nobody knows which one is right.
+
+A Farol example: the decision to use a bank aggregator lives in ADR 0012. The investor PDF says, in one sentence, that bank data arrives through an aggregator, and doesn't repeat the analysis.
+
+## Decided versus in progress
+
+A simple split keeps the documentation folder from becoming a dumping ground:
+
+- **`docs/`** holds what is **decided**: ADRs, runbooks, team rules, product vision.
+- **A working folder** (at Farol, `management/notes/`) holds what is still **being thought through**.
+- **GitHub Projects** holds what is **to be done**.
+
+A note in progress ends one of two ways: it becomes an ADR (if it's a decision) or an issue (if it's work). After that, it can be deleted.
+
+## What about people who don't read GitHub?
+
+A product's repository is usually private. Testers, consultants, and investors won't browse it. For them, write a plain-language summary, export it to PDF and keep it in the drive, or publish it on the product's blog.
+
+If that becomes a weekly routine, with several non-technical people editing, it's the signal to consider a tool like Confluence.
+
+::: {.callout-tip title="In this repository"}
+This book follows the same rule: text and diagrams in the repository, decisions in [`adr/`](https://github.com/Garon-Sys/saas-handbook/tree/main/adr), secrets nowhere.
+:::
+
+::: {.callout-note title="Try it"}
+Run `git rev-list --objects --all | git cat-file --batch-check='%(objectsize) %(rest)' | sort -rn | head` in your repository. The largest objects in history show which binaries should have gone somewhere else.
+:::

@@ -1,0 +1,73 @@
+# Incidents and postmortems {#sec-incidents}
+
+During an incident, the order is **stabilize, communicate, and only then investigate**. Afterward, a blameless postmortem turns the scare into concrete improvements in the backlog.
+
+## Severity levels
+
+| Severity | Situation | Response |
+| --- | --- | --- |
+| SEV1 | Down, or data exposed or corrupted | Immediate; notify users |
+| SEV2 | An important feature is broken | Same day |
+| SEV3 | Minor problem, with a workaround | Goes into the backlog as P1 or P2 |
+
+When in doubt, classify it as more severe. Downgrading later is easy; finding out late that it was a SEV1 isn't.
+
+## The flow of an incident
+
+```{mermaid}
+flowchart TD
+    A["Alert or report"] --> T["Triage: which severity?"]
+    T --> E["Stabilize<br/>rollback, switch off flag, scale up"]
+    E --> C["Communicate<br/>status, affected users"]
+    C --> V{"Back to normal?"}
+    V -- no --> E
+    V -- yes --> I["Investigate the cause"]
+    I --> P["Postmortem"]
+    P --> B["Actions become issues"]
+```
+
+**Stabilize first.** The question isn't "why did it break?" but "what's the fastest way back to normal?". It's almost always a rollback or switching off a feature flag. The investigation comes later, calmly.
+
+**Communicate early.** A short notice ("we're aware of slow imports and working on it") heads off dozens of messages and shows you're in control. Update every 30 minutes during a SEV1, even if it's just "still investigating".
+
+**Take notes as it happens.** A file or channel with timestamps and what was done. By postmortem time, memory will already have rewritten the story.
+
+## Blameless postmortem
+
+After every SEV1 or SEV2, write a postmortem in `docs/postmortems/YYYY-MM-DD-title.md`. The central question is **"what gap in the process allowed this?"**, never "who made the mistake?". If the answer is "person X made a mistake", the next question is "why did the system let a human error reach production?".
+
+The full template is in Appendix [-@sec-templates].
+
+## Example: Farol down for 47 minutes
+
+A fictional postmortem, summarized:
+
+> **Summary:** on November 3, Farol was down from 2:02 PM to 2:49 PM. No data was lost.
+>
+> **Impact:** all users without access for 47 minutes; 12 scheduled imports were delayed.
+>
+> **Timeline:**
+>
+> - 1:58 PM — deploy of version `a3f9c2d`, with a migration that renames the `amount` column.
+> - 2:02 PM — external monitor alerts: API returning 500 errors.
+> - 2:09 PM — code rollback; the error continues, because the old column no longer exists.
+> - 2:31 PM — decision to restore the column with a manual migration.
+> - 2:49 PM — service back to normal.
+>
+> **Cause:** the migration renamed the column in a single step. The old code, still running during the deploy and then after the rollback, looked for the old name.
+>
+> **What worked:** the alert fired within 4 minutes.
+>
+> **What didn't work:** a code rollback doesn't undo a migration, and the rollback runbook didn't say so.
+>
+> **Actions:**
+>
+> - [ ] Adopt expand, migrate, and contract for every schema change (#141).
+> - [ ] Add "migration compatible with the previous version" to the PR template (#142).
+> - [ ] Update the rollback runbook with the migration case (#143).
+
+Notice that no action is "be more careful". Good actions change the process, the tool, or the document.
+
+::: {.callout-note title="Try it"}
+Pick the last serious problem your product had, even an old one, and write its postmortem. The actions that come out of it become issues on your board.
+:::

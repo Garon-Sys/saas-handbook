@@ -1,0 +1,19 @@
+# Quarto output
+/_book/
+/.quarto/
+*_files/
+**/*.quarto_ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Secrets: never in the repository
+.env
+.env.*
+!.env.example

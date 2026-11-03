@@ -1,0 +1,115 @@
+# Code flow and pull requests {#sec-flow}
+
+Every change goes in through a pull request into a `main` that is always ready for production, even when only one person writes code. It's the habit that makes bringing in a collaborator painless.
+
+## The cycle of a task
+
+```{mermaid}
+flowchart TB
+    subgraph pr["In the pull request"]
+        direction LR
+        I["Issue in the Backlog"] --> B["Branch from the issue"] --> P["Pull request"] --> CI{"CI green?"}
+        CI -- no --> F["Fix and push"] --> P
+    end
+    subgraph delivery["After CI passes"]
+        direction LR
+        R["Review"] --> M["Merge to main"] --> D["Deploy:<br/>staging, then production"] --> X["Issue closed"]
+    end
+    pr -- "yes" --> delivery
+    style pr fill:transparent,stroke:#adb5bd
+    style delivery fill:transparent,stroke:#adb5bd
+```
+
+## GitHub Flow in five rules
+
+1. `main` is always deployable.
+2. Each task gets a short branch, named after the issue: `123-export-pdf`.
+3. A branch lives for days, not weeks. A big change is split into smaller PRs.
+4. A PR only goes in with green CI and, when there's a collaborator, a review.
+5. After the merge, the branch is deleted and the deploy happens.
+
+There are more elaborate flows, such as Git Flow, with `develop` and `release` branches. They make sense for software installed by the customer, with several versions in parallel. A SaaS has only one version in production, and GitHub Flow is enough.
+
+## Branch protection
+
+In **Settings → Branches** (or **Rules**), protect `main`:
+
+- require a pull request for any change;
+- require CI to pass;
+- block direct pushes and force pushes;
+- with a collaborator, require one approval.
+
+Turn it on even if you're alone. It's what stops the "just a tiny fix straight to `main`" at eleven at night.
+
+## The PR template
+
+A `.github/pull_request_template.md` file pre-fills the description of every PR:
+
+```markdown
+## What changes
+
+Closes #
+
+## How to test
+
+1.
+
+## Checklist
+
+- [ ] Tests passing
+- [ ] Migration reviewed (compatible with the previous version)
+- [ ] No real data or secrets in the diff
+- [ ] Docs, ADR, or runbook updated, if needed
+
+## Risk
+
+Low / Medium / High, and why:
+```
+
+## What to look for in a review
+
+In a small team, review isn't an audit; it's the second opinion that catches what the author missed. In order of importance:
+
+1. **Correctness:** does it do what the issue asks? Are edge cases covered?
+2. **Security and data:** any secret, real data, or query without a permission filter?
+3. **Migration:** is it compatible with the previous version of the code (Chapter [-@sec-migrations])?
+4. **Clarity:** will someone else understand this six months from now?
+5. **Style:** only what the linter doesn't catch. The linter handles the rest.
+
+## Commit messages: Conventional Commits
+
+The prefix states the type of change and lets you generate the changelog automatically.
+
+| Prefix | Use | Farol example |
+| --- | --- | --- |
+| `feat:` | New feature | `feat(api): import transactions from the aggregator` |
+| `fix:` | Bug fix | `fix(web): fix total per space` |
+| `docs:` | Documentation only | `docs: add ADR 0013` |
+| `refactor:` | Code change without behavior change | `refactor(api): extract the members service` |
+| `test:` | Tests only | `test(api): cover expired invitation` |
+| `chore:` | Maintenance, dependencies | `chore: upgrade Django` |
+| `ops:` | Infra, deploy, monitoring | `ops: error rate alert` |
+
+## Changelog
+
+A `CHANGELOG.md` with what changed in each version, **in user language**. "You can now export the annual report as a PDF", not "add endpoint `/reports/annual/pdf`". It feeds the release notes for testers and the product blog.
+
+## Definition of done
+
+A task only moves to "Done" when:
+
+- the code is merged into `main` and in production;
+- tests cover the new behavior;
+- the migration was reviewed;
+- the documentation was updated, when there's something to document;
+- the issue was closed by the PR.
+
+Chapter [-@sec-vscode] walks through this same flow, step by step, inside VS Code.
+
+::: {.callout-tip title="In this repository"}
+This book's [PR template](https://github.com/Garon-Sys/saas-handbook/blob/main/.github/pull_request_template.md) is an adapted version of the template above. See the [closed PRs](https://github.com/Garon-Sys/saas-handbook/pulls?q=is%3Apr+is%3Aclosed) for real examples of descriptions and reviews.
+:::
+
+::: {.callout-note title="Try it"}
+Turn on branch protection for `main` in your project today. Then make a one-line change through the full flow: issue, branch, PR, CI, merge.
+:::
